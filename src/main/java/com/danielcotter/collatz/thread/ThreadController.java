@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class ThreadController {
 
-	Map<Integer, Integer> knownIntegers = new HashMap<>();
+	private Map<Integer, Integer> knownIntegers = new HashMap<>();
 
 	public void init() throws InterruptedException {
 		int i = 1;
@@ -16,16 +16,21 @@ public class ThreadController {
 		while (true) {
 			i = newNumber(i);
 			computeCollatz(i);
-			System.out.println("");
-			Thread.sleep(500);
+			if (i >= 1000)
+				break;
 		}
+
+		System.out.println(knownIntegers);
 	}
 
-	private int computeCollatz(int integer) {
-		if (integer == 1)
-			return 1;
+	private void computeCollatz(int integer) {
+		int computation = 0;
 
-		return (integer % 2 == 0) ? computeCollatz(integer / 2) : computeCollatz(3 * integer + 1);
+		while (integer != 1 && !knownIntegers.containsKey(integer)) {
+			computation = (integer % 2 == 0) ? (integer / 2) : (3 * integer + 1);
+			knownIntegers.put(integer, computation);
+			integer = computation;
+		}
 	}
 
 	private int newNumber(int integer) {
